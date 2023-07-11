@@ -12,9 +12,9 @@
     <packaging>jar</packaging>
 
     <scm>
-        <connection>scm:git:${scm.baseurl}/enu-console-admin.git</connection>
-        <developerConnection>scm:git:${scm.baseurl}/enu-console-admin.git</developerConnection>
-        <url>${scm.baseurl}/enu-console-admin.git</url>
+        <connection>scm:git:https://github.com/republique-et-canton-de-geneve/enu-console-admin.git</connection>
+        <developerConnection>scm:git:https://github.com/republique-et-canton-de-geneve/enu-console-admin.git</developerConnection>
+        <url>https://github.com/republique-et-canton-de-geneve/enu-console-admin.git</url>
         <tag>HEAD</tag>
     </scm>
 
