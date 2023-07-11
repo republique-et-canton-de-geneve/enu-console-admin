@@ -1,0 +1,80 @@
+variables:
+  GIT_SSL_NO_VERIFY: 'true'
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+
+  HTTP_PROXY: 'http://proxygeadm.etat-ge.ch:3128'
+  HTTPS_PROXY: 'http://proxygeadm.etat-ge.ch:3128'
+  NO_PROXY: 'localhost,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,10.145.38.211,.ceti.etat-ge.ch,registry.devops.etat-ge.ch'
+
+  YARN_REGISTRY: 'https://registry.devops.etat-ge.ch/ctinexus/repository/npmjs/'
+  NPM_REGISTRY: 'https://registry.devops.etat-ge.ch/ctinexus/repository/npmjs/'
+
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --show-version"
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+
+default:
+  tags:
+    - 'for:application-project'
+    - 'host:restricted-container'
+    - 'net:soca4-dev'
+  image: docker-all.devops.etat-ge.ch/ch/ge/cti/build/alpine-maven-git-node:18
+
+stages:
+  - build
+  - release
+
+cache:
+  untracked: false
+  key:
+    files:
+      - app/yarn.lock
+      - pom.xml
+  paths:
+    - app/node_modules
+    - app/.yarn
+    - .m2/repository
+
+deploy:
+  stage: build
+  script:
+    - rm -rf front-build
+    - cd app
+    - rm -rf build
+    - node -e "console.log('Building version ' + require('./package.json').version);"
+    - yarn config set "strict-ssl" false
+    - yarn config set yarn-registry https://registry.devops.etat-ge.ch/ctinexus/repository/npmjs/
+    - "[ ! -d .yarn ] && mkdir .yarn"
+    - yarn config set cache-folder .yarn
+    - yarn install --network-timeout 600000
+    - yarn browserslist --update-db
+    - CI= yarn build
+    - mv build ../front-build
+    - cd ..
+    - mvn $MAVEN_CLI_OPTS clean deploy
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - target/
+      - front-build/
+
+release:
+  stage: release
+  script:
+    - git config --global user.email "gitlab@etat.ge.ch"
+    - git config --global user.name "gitlab-runner"
+    - git checkout $CI_COMMIT_REF_NAME
+    - mvn $MAVEN_CLI_OPTS versions:set -DremoveSnapshot
+    - ls -al front-build
+    - mvn $MAVEN_CLI_OPTS deploy
+    - mvn $MAVEN_CLI_OPTS versions:commit
+    - mvn $MAVEN_CLI_OPTS scm:checkin -Dmessage='[skip ci] Tag' -Dusername=$GITLAB_USER -Dpassword=$GITLAB_PASSWORD
+    - mvn $MAVEN_CLI_OPTS scm:tag -Dmessage='[skip ci] Tag' -Dtag=\${project.version} -Dusername=$GITLAB_USER -Dpassword=$GITLAB_PASSWORD
+    - mvn $MAVEN_CLI_OPTS build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}-SNAPSHOT versions:commit
+    #mvn build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.nextMinorVersion}.\${parsedVersion.incrementalVersion}\${parsedVersion.qualifier?}-SNAPSHOT versions:commit
+    - mvn $MAVEN_CLI_OPTS scm:checkin -Dmessage='[skip ci] New release' -Dusername=$GITLAB_USER -Dpassword=$GITLAB_PASSWORD
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - target/*.jar
+  when: manual

@@ -1,0 +1,50 @@
+{
+  "name": "enu-console-admin",
+  "private": true,
+  "license": "Apache 2.0",
+  "source": "src/index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build --no-source-maps"
+  },
+  "homepage": "/enu-console-admin",
+  "targets": {
+    "default": {
+      "context": "browser",
+      "distDir": "./build",
+      "publicUrl": "/enu-console-admin"
+    }
+  },
+  "browserslist": [
+    "> 0.2% in CH and not dead",
+    "Firefox ESR"
+  ],
+  "devDependencies": {
+    "@emotion/babel-plugin": "^11.10.6",
+    "@parcel/packager-raw-url": "^2.8.3",
+    "@parcel/reporter-bundle-analyzer": "^2.8.3",
+    "@parcel/resolver-glob": "^2.8.3",
+    "@parcel/transformer-sass": "2.8.3",
+    "@parcel/transformer-svg-react": "^2.8.3",
+    "@parcel/transformer-webmanifest": "2.8.3",
+    "babel-plugin-direct-import": "^1.0.0",
+    "babel-plugin-import": "^1.13.6",
+    "miragejs": "^0.1.47",
+    "parcel": "^2.8.3",
+    "parcel-reporter-static-files-copy": "^1.5.0",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.12.2",
+    "@mui/x-data-grid": "^6.2.1",
+    "@mui/x-date-pickers": "^6.2.1",
+    "date-fns": "^2.30.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.10.0"
+  }
+}
