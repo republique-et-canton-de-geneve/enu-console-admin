@@ -16,6 +16,13 @@ spring:
       fail-on-unknown-properties: false
     serialization:
       fail-on-empty-beans: false
+  datasource:
+    url: "${DB_URL}"
+    username: "${DB_USERNAME}"
+    password: "${DB_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
   data:
     mongodb:
       host: ${MONGODB_HOST}
@@ -23,14 +30,64 @@ spring:
       username: ${MONGODB_USER}
       password: ${MONGODB_PASSWORD}
       database: ${MONGODB_DATABASE}
+  security:
+    oauth2:
+      client:
+        provider:
+          sso:
+            issuer-uri: ${RABBITMQ_UAA}
+          ged:
+            issuer-uri: https://ssodev.geneveid.ch/ginasso/oauth2/access_token
+        registration:
+          sso:
+            client-id: ${UAA_CLIENT_ID}
+            client-secret: ${UAA_CLIENT_SECRET}
+            username: ${UAA_USERNAME}
+            password: ${UAA_PASSWORD}
+            authorization-grant-type: password
+          ged:
+            client-id: ${GED_CLIENT_ID}
+            client-secret: ${GED_CLIENT_SECRET}
+            username: ${GED_USERNAME}
+            password: ${GED_PASSWORD}
+            authorization-grant-type: password
+            scope: openid dfce
+            auth_chain: batchService
 
 app:
   server:
     instance: enu-console-admin
+  ged:
+    url: "${GED_URL}"
+    base-id: 10928-01
+    domain: ENU
+    classification: non-public
+    lifecycle: 1A_SUPPRESSION
+    application-id: 10928-enu@devlocal
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    appid: enu-console-admin
+    port: '5672'
+    virtual-host: aelenu
+    timeout-cnx: 60000
+    timeout-read: 60000
+    ssl:
+      verify-hostname: false
+      enabled: true
+    listener:
+      direct:
+        acknowledge-mode: auto
+  docubase:
+    url: "${DOCUBASE_URL}"
+    base: "${DOCUBASE_BASE_ID}"
+    gina: "${DOCUBASE_GINA_URL}"
+    gina-cookie: "ETATRAD"
+    gina-cookie-expiration: 1 # en heures
+    login: "${DOCUBASE_LOGIN}"
+    password: "${DOCUBASE_PASSWORD}"
 
 logging:
   level:
     root: INFO
     org.springframework: INFO
-    org.springframework.web.socket: WARN
-    reactor.netty.http.client: INFO
+    ch.ge.ged.datacontent.connector: INFO
