@@ -1,7 +1,8 @@
 server:
   port: 8086
+  shutdown: graceful
   servlet:
-    context-path: /enu-console-admin
+    context-path: /enu-console-admin/api
 
 spring:
   messages:
@@ -37,7 +38,7 @@ spring:
           sso:
             issuer-uri: ${RABBITMQ_UAA}
           ged:
-            issuer-uri: https://ssodev.geneveid.ch/ginasso/oauth2/access_token
+            issuer-uri: ${GED_ISSUER_URI}
         registration:
           sso:
             client-id: ${UAA_CLIENT_ID}
@@ -57,6 +58,8 @@ spring:
 app:
   server:
     instance: enu-console-admin
+  systemscheck:
+    interval: 5000
   ged:
     url: "${GED_URL}"
     base-id: 10928-01
@@ -68,6 +71,7 @@ app:
     host: ${RABBITMQ_HOST}
     appid: enu-console-admin
     port: '5672'
+    adminhost: ${ADMIN_HOST}
     virtual-host: aelenu
     timeout-cnx: 60000
     timeout-read: 60000
