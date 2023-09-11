@@ -4,7 +4,7 @@
     <parent>
         <groupId>ch.ge.ael.enu</groupId>
         <artifactId>maven-parent</artifactId>
-        <version>1.12</version>
+        <version>1.16</version>
     </parent>
     <artifactId>enu-console-admin</artifactId>
     <version>0.1-SNAPSHOT</version>
