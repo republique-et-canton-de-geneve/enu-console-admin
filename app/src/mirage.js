@@ -14,6 +14,7 @@ export function startMirage() {
             this.passthrough('/hello');
             this.passthrough('/systems/list');
             this.passthrough('/systems/check');
+            this.passthrough('/rabbit/topology');
             this.get("/audit/messages", () => {return auditmessages;}, {timing: 500});
         },
     });}

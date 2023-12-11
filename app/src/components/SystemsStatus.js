@@ -6,19 +6,25 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CloseIcon from '@mui/icons-material/Close';
 import {API_PATH} from "../config";
 
-export default function SystemsStatus() {
+export default function SystemsStatus({...props}) {
     const [systemsCheck, setSystemsCheck] = useState([]);
+    const [rabbitConf, setRabbitConf] = useState({});
 
     const refreshSystemsCheck = () => fetch(API_PATH + "/systems/check")
         .then(response => response.json())
         .then(systems => setSystemsCheck(systems));
 
+    const getRabbitConf = () => fetch(API_PATH + "/rabbit/topology")
+        .then(response => response.json())
+        .then(conf => setRabbitConf(conf));
+
     useEffect(()=>{
         refreshSystemsCheck().then(() => setTimeout(refreshSystemsCheck, 5000));
+        getRabbitConf().then(() => { console.log("Rabbit conf OK");})
     },[]);
 
     return (
-        <Paper sx={{width: "auto", margin: 1}}>
+        <Paper {...props}>
             <Typography variant="h5" sx={{marginLeft: 1}}>État des composants</Typography>
             <List dense={true}>
                 {

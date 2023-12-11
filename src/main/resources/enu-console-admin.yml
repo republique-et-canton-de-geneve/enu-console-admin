@@ -95,3 +95,4 @@ logging:
     root: INFO
     org.springframework: INFO
     ch.ge.ged.datacontent.connector: INFO
+    ch.ge.ael.consoleadmin: DEBUG
